@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>تطبيق مواقيت الصلاة</title>
+  <style>
+    /* إعدادات عامة */
+    body {
+      font-family: 'Arial', sans-serif;
+      direction: rtl;
+      text-align: center;
+      background-color: #5b89be;
+      color: #333;
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+    }
+
+    /* شاشة التحميل */
+    #loading-screen {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: #5b89be;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+      transition: opacity 0.5s;
+    }
+
+    #loading-screen.hidden {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    #loading-screen .logo img {
+      width: 700px;
+      height: auto;
+    }
+
+    /* تصميم دائرة التحميل */
+    .spinner {
+      border: 8px solid #f3f3f3;
+      border-top: 8px solid #3498db;
+      border-radius: 50%;
+      width: 60px;
+      height: 60px;
+      animation: spin 1.5s linear infinite;
+      margin-bottom: 20px;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    /* تصميم المحتوى */
+    .container {
+      max-width: 800px;
+      margin: 20px auto;
+      padding: 20px;
+      background-color: #033278;
+      border-radius: 15px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      border: 2px solid #005eff;
+      overflow: hidden;
+      display: none;
+    }
+
+    h1 {
+      color: #ffffff;
+      font-size: 28px;
+      margin-bottom: 15px;
+    }
+
+    .logo img {
+      width: 100px;
+      height: auto;
+    }
+
+    .settings {
+      margin-bottom: 20px;
+    }
+
+    .settings-panel {
+      background-color: #5b89be;
+      padding: 15px;
+      border-radius: 10px;
+      border: 1px solid #ffffff;
+      display: none;
+      text-align: right;
+    }
+
+    .settings-panel label {
+      display: block;
+      margin: 10px 0 5px;
+      color: #ffffff;
+    }
+
+    select, input[type="color"] {
+      padding: 10px;
+      font-size: 16px;
+      border-radius: 8px;
+      border: 1px solid #ffffff;
+      background-color: #ffffff;
+      color: #5b89be;
+      width: calc(100% - 22px);
+      margin-bottom: 10px;
+    }
+
+    #prayer-times {
+      margin-top: 20px;
+    }
+
+    #prayer-times p {
+      font-size: 20px;
+      margin: 10px 0;
+      color: #f4e3e3d9;
+      font-weight: bold;
+    }
+
+    #prayer-times span {
+      color: #ffffff;
+    }
+
+    button {
+      padding: 10px 20px;
+      font-size: 16px;
+      color: #ffffff;
+      background-color: #5b89be;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      margin-top: 10px;
+      transition: background-color 0.3s, transform 0.2s;
+    }
+
+    button:hover {
+      background-color: #4a76a8;
+    }
+
+    button:active {
+      transform: scale(0.98);
+    }
+
+    .footer {
+      margin-top: 20px;
+      font-size: 14px;
+      color: #5b89be;
+    }
+
+    /* تحسين التفاعل على الأجهزة الصغيرة */
+    @media (max-width: 600px) {
+      h1 {
+        font-size: 22px;
+      }
+      #prayer-times p {
+        font-size: 18px;
+      }
+      button {
+        font-size: 14px;
+        padding: 8px 15px;
+      }
+      .settings-panel {
+        padding: 10px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- شاشة التحميل -->
+  <div id="loading-screen">
+    <div class="logo">
+      <img src="C:/Users/eldir.DESKTOP-LD6PQI1/Desktop/المؤذن/151.jpg" alt="Logo">
+    </div>
+    <div class="spinner"></div>
+    <p>جاري تحميل البيانات...</p>
+  </div>
+
+  <!-- محتوى التطبيق -->
+  <div class="container">
+    <div class="logo">
+      <img src="C:/Users/eldir.DESKTOP-LD6PQI1/Desktop/المؤذن/151.jpg" alt="Logo">
+    </div>
+    <h1>تطبيق مواقيت الصلاة</h1>
+    <div class="settings">
+      <button onclick="toggleSettings()">إعدادات</button>
+    </div>
+    <div id="settings-panel" class="settings-panel">
+      <label for="city-select">اختر المدينة:</label>
+      <select id="city-select">
+        <option value="Tripoli">طرابلس</option>
+        <option value="Misrata">مصراتة</option>
+        <option value="Benghazi">بنغازي</option>
+      </select>
+      <label for="format-select">تنسيق الوقت:</label>
+      <select id="format-select">
+        <option value="24-hour">24 ساعة</option>
+        <option value="12-hour">12 ساعة</option>
+      </select>
+      <label for="bg-color">لون الخلفية:</label>
+      <input type="color" id="bg-color" value="#f4f4f9">
+      <label for="text-color">لون النصوص:</label>
+      <input type="color" id="text-color" value="#333">
+      <button onclick="logout()">خروج</button>
+      <p class="footer">برمجة: علي عبدالمنعم الدرقاش</p>
+    </div>
+    <div id="prayer-times">
+      <p>الفجر: <span id="fajr-time">--:--</span></p>
+      <p>الظهر: <span id="dhuhr-time">--:--</span></p>
+      <p>العصر: <span id="asr-time">--:--</span></p>
+      <p>المغرب: <span id="maghrib-time">--:--</span></p>
+      <p>العشاء: <span id="isha-time">--:--</span></p>
+    </div>
+    <audio id="adhan-audio" src="C:/Users/eldir.DESKTOP-LD6PQI1/Desktop/المؤذن/5cc9f578195e0.mp3" preload="auto"></audio>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/moment@2.29.4/moment.min.js"></script>
+  <script>
+    const apiKey = 'YOUR_API_KEY'; // استبدل بـ API Key الخاص بـ PrayerTimes API
+    const baseUrl = 'https://api.aladhan.com/v1/timingsByCity';
+
+    function fetchPrayerTimes(city) {
+      axios.get(`${baseUrl}?city=${city}&country=LY&apikey=${apiKey}`)
+        .then(response => {
+          console.log('API Response:', response.data);
+          if (response.data && response.data.data && response.data.data.timings) {
+            const data = response.data.data.timings;
+            const format = document.getElementById('format-select').value;
+            const prayerTimes = {
+              fajr: formatTime(data.Fajr, format),
+              dhuhr: formatTime(data.Dhuhr, format),
+              asr: formatTime(data.Asr, format),
+              maghrib: formatTime(data.Maghrib, format),
+              isha: formatTime(data.Isha, format)
+            };
+            updatePrayerTimes(prayerTimes);
+            checkPrayerTimes(prayerTimes);
+          } else {
+            console.error('Invalid API response format:', response.data);
+          }
+        })
+        .catch(error => {
+          console.error('Error fetching prayer times:', error);
+        });
+    }
+
+    function formatTime(time, format) {
+      const momentTime = moment(time, 'HH:mm:ss');
+      return format === '12-hour' ? momentTime.format('hh:mm A') : momentTime.format('HH:mm');
+    }
+
+    function updatePrayerTimes(prayerTimes) {
+      document.getElementById('fajr-time').textContent = prayerTimes.fajr;
+      document.getElementById('dhuhr-time').textContent = prayerTimes.dhuhr;
+      document.getElementById('asr-time').textContent = prayerTimes.asr;
+      document.getElementById('maghrib-time').textContent = prayerTimes.maghrib;
+      document.getElementById('isha-time').textContent = prayerTimes.isha;
+    }
+
+    function checkPrayerTimes(prayerTimes) {
+      const now = moment().format('HH:mm');
+      const adhanAudio = document.getElementById('adhan-audio');
+      Object.keys(prayerTimes).forEach(prayer => {
+        if (now === prayerTimes[prayer]) {
+          adhanAudio.play();
+        }
+      });
+    }
+
+    function toggleSettings() {
+      const panel = document.getElementById('settings-panel');
+      panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
+    }
+
+    function logout() {
+      alert('تسجيل الخروج');
+    }
+
+    function updateAppearance() {
+      const bgColor = document.getElementById('bg-color').value;
+      const textColor = document.getElementById('text-color').value;
+      document.body.style.backgroundColor = bgColor;
+      document.querySelector('.container').style.backgroundColor = bgColor;
+      document.querySelector('#settings-panel').style.backgroundColor = bgColor;
+      document.querySelectorAll('#prayer-times p').forEach(el => el.style.color = textColor);
+    }
+
+    document.getElementById('city-select').addEventListener('change', function() {
+      fetchPrayerTimes(this.value);
+    });
+
+    document.getElementById('format-select').addEventListener('change', function() {
+      const city = document.getElementById('city-select').value || 'Tripoli';
+      fetchPrayerTimes(city);
+    });
+
+    document.getElementById('bg-color').addEventListener('input', updateAppearance);
+    document.getElementById('text-color').addEventListener('input', updateAppearance);
+
+    document.addEventListener('DOMContentLoaded', () => {
+      setTimeout(() => {
+        fetchPrayerTimes('Tripoli');
+        document.querySelector('.container').style.display = 'block';
+        document.getElementById('loading-screen').classList.add('hidden');
+      }, 1000);
+    });
+
+    setInterval(() => {
+      const city = document.getElementById('city-select').value || 'Tripoli';
+      fetchPrayerTimes(city);
+    }, 60000);
+  </script>
+</body>
+</html>
